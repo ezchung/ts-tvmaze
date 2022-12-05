@@ -5,7 +5,9 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 
-const BASE_URL = "https://api.tvmaze.com"
+const BASE_URL = "https://api.tvmaze.com";
+const DEFAULT_IMG = 'https://tinyurl.com/tv-missing';
+
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -13,24 +15,24 @@ const BASE_URL = "https://api.tvmaze.com"
  *    (if no image URL given by API, put in a default image URL)
  */
 
-async function getShowsByTerm(term: string): Promise< Array<IShow> > {
-  console.log("here ----------------------------")
+async function getShowsByTerm(term: string): Promise<Array<IShow>> {
+  console.log("here ----------------------------");
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   let res: IApiResp = await axios.get(`${BASE_URL}/search/shows/?q=${term}`);
-  let shows = res.data.map(data => data.show)
+  let shows = res.data.map(data => data.show);
   return shows;
-}
+};
 
 interface IShow {
-    id: number;
-    name: string;
-    summary: string;
-    image: string
+  id: number;
+  name: string;
+  summary: string;
+  image: string;
 }
 
 //Expecting an object with key of show with type of IShow
-interface IApiResp { 
-    data: Array<{show: IShow}>
+interface IApiResp {
+  data: Array<{ show: IShow; }>;
 }
 
 /** Given list of shows, create markup for each and to DOM */
@@ -39,11 +41,13 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
+    console.log('show>>', show);
+
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
+              src="${show.image.original || DEFAULT_IMG}"
               alt="Bletchly Circle San Francisco"
               class="w-25 me-3">
            <div class="media-body">
@@ -57,7 +61,8 @@ function populateShows(shows) {
        </div>
       `);
 
-    $showsList.append($show);  }
+    $showsList.append($show);
+  }
 }
 
 
