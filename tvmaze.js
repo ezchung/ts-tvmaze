@@ -12777,6 +12777,7 @@ var axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 var $showsList = $("#showsList");
 var $episodesArea = $("#episodesArea");
+var $episodesList = $("#episodesList");
 var $searchForm = $("#searchForm");
 var BASE_URL = "https://api.tvmaze.com";
 var DEFAULT_IMG = 'https://tinyurl.com/tv-missing';
@@ -12788,7 +12789,7 @@ var DEFAULT_IMG = 'https://tinyurl.com/tv-missing';
  */
 function getShowsByTerm(term) {
     return __awaiter(this, void 0, void 0, function () {
-        var res, shows;
+        var res;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -12796,20 +12797,28 @@ function getShowsByTerm(term) {
                     return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/search/shows/?q=").concat(term))];
                 case 1:
                     res = _a.sent();
-                    shows = res.data.map(function (data) { return data.show; });
-                    return [2 /*return*/, shows];
+                    return [2 /*return*/, res.data.map(function (result) {
+                            var _a = result.show, id = _a.id, name = _a.name, summary = _a.summary, image = _a.image;
+                            return {
+                                id: id,
+                                name: name,
+                                summary: summary,
+                                image: (image === null || image === void 0 ? void 0 : image.original) || DEFAULT_IMG
+                            };
+                        })];
             }
         });
     });
 }
 ;
+//Expecting an object with key of show with type of IShow
 /** Given list of shows, create markup for each and to DOM */
 function populateShows(shows) {
     $showsList.empty();
     for (var _i = 0, shows_1 = shows; _i < shows_1.length; _i++) {
         var show = shows_1[_i];
         console.log('show>>', show);
-        var $show = $("<div data-show-id=\"".concat(show.id, "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"").concat(show.image.original || DEFAULT_IMG, "\"\n              alt=\"Bletchly Circle San Francisco\"\n              class=\"w-25 me-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">").concat(show.name, "</h5>\n             <div><small>").concat(show.summary, "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      "));
+        var $show = $("<div data-show-id=\"".concat(show.id, "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"").concat(show.image, "\"\n              alt=\"Bletchly Circle San Francisco\"\n              class=\"w-25 me-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">").concat(show.name, "</h5>\n             <div><small>").concat(show.summary, "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      "));
         $showsList.append($show);
     }
 }
@@ -12818,14 +12827,19 @@ function populateShows(shows) {
  */
 function searchForShowAndDisplay() {
     return __awaiter(this, void 0, void 0, function () {
-        var term, shows;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var term, shows, _a, _b, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     term = $("#searchForm-term").val();
                     return [4 /*yield*/, getShowsByTerm(term)];
                 case 1:
-                    shows = _a.sent();
+                    shows = _d.sent();
+                    _b = (_a = console).log;
+                    _c = ['getEpisodes'];
+                    return [4 /*yield*/, getEpisodesOfShow(1)];
+                case 2:
+                    _b.apply(_a, _c.concat([_d.sent()]));
                     $episodesArea.hide();
                     populateShows(shows);
                     return [2 /*return*/];
@@ -12850,9 +12864,48 @@ $searchForm.on("submit", function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-// async function getEpisodesOfShow(id) { }
+function getEpisodesOfShow(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var res, episodes;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/shows/").concat(id, "/episodes"))];
+                case 1:
+                    res = _a.sent();
+                    episodes = res.data.map(function (episode) { return (episode); });
+                    return [2 /*return*/, episodes];
+            }
+        });
+    });
+}
 /** Write a clear docstring for this function... */
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) {
+    $episodesList.empty();
+    for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
+        var episode = episodes_1[_i];
+        $episodesList.append("<li>\n      ".concat(episode.name, "\n      (season ").concat(episode.season, ", number ").concat(episode.number, ")\n      </li>"));
+    }
+}
+function getAndDisplayEpisode(evt) {
+    return __awaiter(this, void 0, void 0, function () {
+        var showId, episodes;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    showId = $(evt.target).closest('.Show').data('show-id');
+                    console.log('showid', showId);
+                    return [4 /*yield*/, getEpisodesOfShow(showId)];
+                case 1:
+                    episodes = _a.sent();
+                    console.log('episodes', episodes);
+                    populateEpisodes(episodes);
+                    $episodesArea.show();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+$showsList.on("click", ".Show-getEpisodes", getAndDisplayEpisode);
 
 
 /***/ })
