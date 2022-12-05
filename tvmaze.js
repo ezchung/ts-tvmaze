@@ -12787,7 +12787,7 @@ var BASE_URL = "https://api.tvmaze.com";
  */
 function getShowsByTerm(term) {
     return __awaiter(this, void 0, void 0, function () {
-        var res;
+        var res, shows;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -12795,8 +12795,8 @@ function getShowsByTerm(term) {
                     return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/search/shows/?q=").concat(term))];
                 case 1:
                     res = _a.sent();
-                    console.log(res.data, "<------------ getShowsByTerm");
-                    return [2 /*return*/, res.data];
+                    shows = res.data.map(function (data) { return data.show; });
+                    return [2 /*return*/, shows];
             }
         });
     });

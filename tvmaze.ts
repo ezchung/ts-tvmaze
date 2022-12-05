@@ -17,19 +17,20 @@ async function getShowsByTerm(term: string): Promise< Array<IShow> > {
   console.log("here ----------------------------")
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   let res: IApiResp = await axios.get(`${BASE_URL}/search/shows/?q=${term}`);
-  console.log(res.data, "<------------ getShowsByTerm");
-  return res.data;
+  let shows = res.data.map(data => data.show)
+  return shows;
 }
 
 interface IShow {
-  id: number;
-  name: string;
-  summary: string;
-  image: string
+    id: number;
+    name: string;
+    summary: string;
+    image: string
 }
 
-interface IApiResp {
-  data: Array<IShow>
+//Expecting an object with key of show with type of IShow
+interface IApiResp { 
+    data: Array<{show: IShow}>
 }
 
 /** Given list of shows, create markup for each and to DOM */
