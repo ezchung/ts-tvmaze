@@ -5,7 +5,7 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 
-
+const BASE_URL = "https://api.tvmaze.com"
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -13,28 +13,24 @@ const $searchForm = $("#searchForm");
  *    (if no image URL given by API, put in a default image URL)
  */
 
-async function getShowsByTerm(term) {
+async function getShowsByTerm(term: string): Promise< Array<IShow> > {
+  console.log("here ----------------------------")
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-  return [
-    {
-      id: 1767,
-      name: "The Bletchley Circle",
-      summary:
-        `<p><b>The Bletchley Circle</b> follows the journey of four ordinary
-           women with extraordinary skills that helped to end World War II.</p>
-         <p>Set in 1952, Susan, Millie, Lucy and Jean have returned to their
-           normal lives, modestly setting aside the part they played in
-           producing crucial intelligence, which helped the Allies to victory
-           and shortened the war. When Susan discovers a hidden code behind an
-           unsolved murder she is met by skepticism from the police. She
-           quickly realises she can only begin to crack the murders and bring
-           the culprit to justice with her former friends.</p>`,
-      image:
-          "http://static.tvmaze.com/uploads/images/medium_portrait/147/369403.jpg"
-    }
-  ]
+  let res: IApiResp = await axios.get(`${BASE_URL}/search/shows/?q=${term}`);
+  console.log(res.data, "<------------ getShowsByTerm");
+  return res.data;
 }
 
+interface IShow {
+  id: number;
+  name: string;
+  summary: string;
+  image: string
+}
+
+interface IApiResp {
+  data: Array<IShow>
+}
 
 /** Given list of shows, create markup for each and to DOM */
 
@@ -69,7 +65,7 @@ function populateShows(shows) {
  */
 
 async function searchForShowAndDisplay() {
-  const term = $("#searchForm-term").val();
+  const term = $("#searchForm-term").val() as string;
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
