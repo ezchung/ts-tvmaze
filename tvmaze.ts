@@ -54,11 +54,9 @@ async function getShowsByTerm(term: string): Promise<Array<IShow>> {
 
 };
 
-
 //Expecting an object with key of show with type of IShow
 
-
-/** Given list of shows, create markup for each and to DOM */
+/** Given list of shows, create markup for each and append to DOM */
 
 function populateShows(shows) {
   $showsList.empty();
@@ -87,7 +85,6 @@ function populateShows(shows) {
     $showsList.append($show);
   }
 }
-
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
@@ -121,9 +118,14 @@ async function getEpisodesOfShow(id: number): Promise<Array<IEpisode>> {
 }
 
 
-/** Write a clear docstring for this function... */
+/** Renders episodes -> creates markup, and appends to the DOM.
+ * Empties current episodes list.
+ * Accepts: Array of episodes like
+ * -      const episodes = [{id, name, season, number}, ...]
+ * Returns: undefined
+ */
 
-function populateEpisodes(episodes: IEpisode[]) {
+function populateEpisodes(episodes: IEpisode[]): void {
   $episodesList.empty();
 
   for (let episode of episodes) {
@@ -138,19 +140,17 @@ function populateEpisodes(episodes: IEpisode[]) {
 
 }
 
+/** Fetch episodes from API, and render to the DOM.
+ * Called by Button click ('Episodes' button), finds showID from evt.target
+ * Shows Episodes area, and returns undefined
+*/
 async function getAndDisplayEpisode(evt: JQuery.ClickEvent) {
   const showId: number = $(evt.target).closest('.Show').data('show-id');
-  console.log('showid', showId);
-
-  // get episodes
   const episodes = await getEpisodesOfShow(showId);
-  console.log('episodes', episodes);
-
 
   populateEpisodes(episodes);
 
   $episodesArea.show();
-
 }
 
 $showsList.on("click", ".Show-getEpisodes", getAndDisplayEpisode);

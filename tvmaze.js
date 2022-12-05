@@ -12812,7 +12812,7 @@ function getShowsByTerm(term) {
 }
 ;
 //Expecting an object with key of show with type of IShow
-/** Given list of shows, create markup for each and to DOM */
+/** Given list of shows, create markup for each and append to DOM */
 function populateShows(shows) {
     $showsList.empty();
     for (var _i = 0, shows_1 = shows; _i < shows_1.length; _i++) {
@@ -12878,7 +12878,12 @@ function getEpisodesOfShow(id) {
         });
     });
 }
-/** Write a clear docstring for this function... */
+/** Renders episodes -> creates markup, and appends to the DOM.
+ * Empties current episodes list.
+ * Accepts: Array of episodes like
+ * -      const episodes = [{id, name, season, number}, ...]
+ * Returns: undefined
+ */
 function populateEpisodes(episodes) {
     $episodesList.empty();
     for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
@@ -12886,6 +12891,10 @@ function populateEpisodes(episodes) {
         $episodesList.append("<li>\n      ".concat(episode.name, "\n      (season ").concat(episode.season, ", number ").concat(episode.number, ")\n      </li>"));
     }
 }
+/** Fetch episodes from API, and render to the DOM.
+ * Called by Button click ('Episodes' button), finds showID from evt.target
+ * Shows Episodes area, and returns undefined
+*/
 function getAndDisplayEpisode(evt) {
     return __awaiter(this, void 0, void 0, function () {
         var showId, episodes;
@@ -12893,11 +12902,9 @@ function getAndDisplayEpisode(evt) {
             switch (_a.label) {
                 case 0:
                     showId = $(evt.target).closest('.Show').data('show-id');
-                    console.log('showid', showId);
                     return [4 /*yield*/, getEpisodesOfShow(showId)];
                 case 1:
                     episodes = _a.sent();
-                    console.log('episodes', episodes);
                     populateEpisodes(episodes);
                     $episodesArea.show();
                     return [2 /*return*/];
