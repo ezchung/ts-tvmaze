@@ -39,9 +39,8 @@ interface IShowFromAPI {
  */
 
 async function getShowsByTerm(term: string): Promise<Array<IShow>> {
-  console.log("here ----------------------------");
-  // ADD: Remove placeholder & make request to TVMaze search shows API.
   const res = await axios.get(`${BASE_URL}/search/shows/?q=${term}`);
+
   return res.data.map((result: { show: IShowFromAPI; }): IShow => {
     const { id, name, summary, image } = result.show;
     return {
@@ -62,8 +61,6 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
-    console.log('show>>', show);
-
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
@@ -93,7 +90,6 @@ function populateShows(shows) {
 async function searchForShowAndDisplay() {
   const term = $("#searchForm-term").val() as string;
   const shows = await getShowsByTerm(term);
-  console.log('getEpisodes', await getEpisodesOfShow(1));
 
   $episodesArea.hide();
   populateShows(shows);
@@ -110,10 +106,9 @@ $searchForm.on("submit", async function (evt) {
  */
 
 async function getEpisodesOfShow(id: number): Promise<Array<IEpisode>> {
-
   const res = await axios.get(`${BASE_URL}/shows/${id}/episodes`);
-
   const episodes = res.data.map((episode: IEpisode) => (episode));
+
   return episodes;
 }
 
@@ -145,6 +140,7 @@ function populateEpisodes(episodes: IEpisode[]): void {
  * Shows Episodes area, and returns undefined
 */
 async function getAndDisplayEpisode(evt: JQuery.ClickEvent) {
+  /* Find ID by closest Show element in DOM. */
   const showId: number = $(evt.target).closest('.Show').data('show-id');
   const episodes = await getEpisodesOfShow(showId);
 

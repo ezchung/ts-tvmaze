@@ -12792,9 +12792,7 @@ function getShowsByTerm(term) {
         var res;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    console.log("here ----------------------------");
-                    return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/search/shows/?q=").concat(term))];
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(BASE_URL, "/search/shows/?q=").concat(term))];
                 case 1:
                     res = _a.sent();
                     return [2 /*return*/, res.data.map(function (result) {
@@ -12817,7 +12815,6 @@ function populateShows(shows) {
     $showsList.empty();
     for (var _i = 0, shows_1 = shows; _i < shows_1.length; _i++) {
         var show = shows_1[_i];
-        console.log('show>>', show);
         var $show = $("<div data-show-id=\"".concat(show.id, "\" class=\"Show col-md-12 col-lg-6 mb-4\">\n         <div class=\"media\">\n           <img\n              src=\"").concat(show.image, "\"\n              alt=\"Bletchly Circle San Francisco\"\n              class=\"w-25 me-3\">\n           <div class=\"media-body\">\n             <h5 class=\"text-primary\">").concat(show.name, "</h5>\n             <div><small>").concat(show.summary, "</small></div>\n             <button class=\"btn btn-outline-light btn-sm Show-getEpisodes\">\n               Episodes\n             </button>\n           </div>\n         </div>\n       </div>\n      "));
         $showsList.append($show);
     }
@@ -12827,19 +12824,14 @@ function populateShows(shows) {
  */
 function searchForShowAndDisplay() {
     return __awaiter(this, void 0, void 0, function () {
-        var term, shows, _a, _b, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var term, shows;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
                     term = $("#searchForm-term").val();
                     return [4 /*yield*/, getShowsByTerm(term)];
                 case 1:
-                    shows = _d.sent();
-                    _b = (_a = console).log;
-                    _c = ['getEpisodes'];
-                    return [4 /*yield*/, getEpisodesOfShow(1)];
-                case 2:
-                    _b.apply(_a, _c.concat([_d.sent()]));
+                    shows = _a.sent();
                     $episodesArea.hide();
                     populateShows(shows);
                     return [2 /*return*/];
